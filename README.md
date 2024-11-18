@@ -106,20 +106,21 @@ Example output structure:
 ### Options
 ```
   -h, --help
-  -v, --version                                                 Print the version and exit
-  -u, --url URL                                                 The connection URL
-  -i, --insecure          false                                 Disable TLS checks (dev only)
-      --[no-]progress     true                                  Enable/disable progress output (default: enabled)
-  -t, --token TOKEN                                             A personal access token
-  -l, --log-level LEVEL   :info                                 Select the logging verbosity level from: [trace, debug, info, error]
-      --fatal-errors      false                                 Any sub-operation failure is considered to be an application level failure
-      --verbose-errors    false                                 Any sub-operation failure is logged as ERROR instead of TRACE
-      --type TYPE         data-loader                           The type of data source this CLI represents
-      --id ID             535CC6FC-EAF7-4CF3-BA97-24B2406674A7  The id of the data-source this CLI represents
-      --class CLASS       global                                The schemaClass of the data-source this CLI represents
-      --config CONFIG                                           Path to test configuration YAML file
-  -c, --concurrency NUM   16                                    The number of parallel requests to issue
-  -m, --mode MODE         :load-attributes                      Select the mode from: [query-attributes, load-attributes, onboard, delete-vaults, delete-attributes, create-vaults]
-  -d, --driver DRIVER     :graphql                              Select the driver from: [graphql]
-  -o, --output-file FILE  results.json                          Write the results to a JSON file
+  -v, --version                                                Print the version and exit
+  -u, --url URL                                                The connection URL
+  -i, --insecure         false                                 Disable TLS checks (dev only)
+      --[no-]progress    true                                  Enable/disable progress output (default: enabled)
+  -t, --token TOKEN                                            A personal access token
+  -l, --log-level LEVEL  :info                                 Select the logging verbosity level from: [trace, debug, info, error]
+      --fatal-errors     false                                 Any sub-operation failure is considered to be an application level failure
+      --verbose-errors   false                                 Any sub-operation failure is logged as ERROR instead of TRACE
+      --type TYPE        data-loader                           The type of data source this CLI represents
+      --id ID            535CC6FC-EAF7-4CF3-BA97-24B2406674A7  The id of the data-source this CLI represents
+      --class CLASS      global                                The schemaClass of the data-source this CLI represents
+      --config CONFIG                                          Path to test configuration YAML file
+  -c, --concurrency NUM  16                                    The number of parallel requests to issue
+  -m, --mode MODE        :load-attributes                      Select the mode from: [query-attributes, load-attributes, onboard, delete-vaults, test-suite, delete-attributes, create-vaults]
+  -d, --driver DRIVER    :graphql                              Select the driver from: [graphql]
+      --csv-file FILE    results.csv                           Write the results to a CSV file
+      --json-file FILE   results.json                          Write the results to a JSON file
 ```

@@ -77,7 +77,9 @@
     :default :graphql
     :parse-fn keyword
     :validate [drivers (str "Must be one of " (print-drivers))]]
-   ["-o" "--output-file FILE" "Write the results to a JSON file"
+   [nil "--csv-file FILE" "Write the results to a CSV file"
+    :default "results.csv"]
+   [nil "--json-file FILE" "Write the results to a JSON file"
     :default "results.json"]])
 
 (defn exit [status msg & args]
@@ -128,8 +130,9 @@
                            config/load-config
                            config/validate-config)
                 results (core/exec-configured-tests config options (first arguments))]
-            (core/write-json-report results output-file)
-            (log/info "Results written to" output-file)
+            (-> results
+                (core/write-json-report (:json-file options))
+                (core/write-csv-report (:csv-file options)))
             0)
           (catch Exception e
             (log/error "Failed to execute configured tests:" (.getMessage e))
@@ -139,7 +142,8 @@
       (do
         (set-logging log-level)
         (let [stats @(core/exec options (first arguments))]
-          (core/write-json-report stats output-file)
+          (-> stats
+              (core/write-json-report (:json-file options)))
           (if (:error stats)
             -1
             0))))))
