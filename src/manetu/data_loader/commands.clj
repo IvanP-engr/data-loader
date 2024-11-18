@@ -1,8 +1,8 @@
 ;; Copyright © Manetu, Inc.  All rights reserved
 
 (ns manetu.data-loader.commands
-  (:require [promesa.core :as p]
-            [manetu.data-loader.driver.api :as driver.api]))
+  (:require [manetu.data-loader.driver.api :as driver.api]
+            [promesa.core :as p]))
 
 (defn init-create-vault [driver]
   (partial driver.api/create-vault driver))

@@ -8,6 +8,7 @@
             [jonase/eastwood "1.3.0"]
             [lein-bin "0.3.5"]]
   :dependencies [[org.clojure/clojure "1.12.0"]
+                 [io.forward/yaml "1.0.11"]
                  [org.clojure/core.async "1.6.681"]
                  [org.clojure/tools.cli "1.1.230"]
                  [com.taoensso/timbre "6.5.0"]
@@ -38,8 +39,7 @@
   :jvm-opts ["-server"]
 
   :bin {:name "manetu-data-loader"
-        :bin-path "target"
-        :bootclasspath false}
+        :bin-path "target/bin"}
 
   :eastwood {:add-linters [:unused-namespaces]
              :exclude-linters [:deprecations :suspicious-expression :local-shadows-var :unused-meta-on-macro :reflection]}

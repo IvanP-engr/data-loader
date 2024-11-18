@@ -1,12 +1,13 @@
 ;; Copyright © Manetu, Inc.  All rights reserved
 
 (ns manetu.data-loader.main
-  (:require [clojure.tools.cli :refer [parse-opts]]
-            [clojure.string :as string]
-            [taoensso.timbre :as log]
-            [manetu.data-loader.core :as core]
+  (:require [clojure.string :as string]
+            [clojure.tools.cli :refer [parse-opts]]
             [manetu.data-loader.commands :as commands]
-            [manetu.data-loader.driver.core :as driver.core])
+            [manetu.data-loader.core :as core]
+            [manetu.data-loader.driver.core :as driver.core]
+            [manetu.data-loader.config :as config]
+            [taoensso.timbre :as log])
   (:gen-class))
 
 (defn set-logging
@@ -34,7 +35,7 @@
 (def driver-description
   (str "Select the driver from: " (print-drivers)))
 
-(def modes (into #{} (keys commands/command-map)))
+(def modes (conj (into #{} (keys commands/command-map)) :test-suite))
 (defn print-modes []
   (str "[" (string/join ", " (map name modes)) "]"))
 (def mode-description
@@ -63,6 +64,7 @@
     :default "535CC6FC-EAF7-4CF3-BA97-24B2406674A7"]
    [nil "--class CLASS" "The schemaClass of the data-source this CLI represents"
     :default "global"]
+   [nil "--config CONFIG" "Path to test configuration YAML file"]
    ["-c" "--concurrency NUM" "The number of parallel requests to issue"
     :default 16
     :parse-fn #(Integer/parseInt %)
@@ -74,7 +76,9 @@
    ["-d" "--driver DRIVER" driver-description
     :default :graphql
     :parse-fn keyword
-    :validate [drivers (str "Must be one of " (print-drivers))]]])
+    :validate [drivers (str "Must be one of " (print-drivers))]]
+   ["-o" "--output-file FILE" "Write the results to a JSON file"
+    :default "results.json"]])
 
 (defn exit [status msg & args]
   (do
@@ -95,9 +99,9 @@
 
 (defn -app
   [& args]
-  (let [{{:keys [help log-level url token] :as options} :options :keys [arguments errors summary]} (parse-opts args options)]
+  (let [{{:keys [help log-level url token mode output-file config] :as options} :options
+         :keys [arguments errors summary]} (parse-opts args options)]
     (cond
-
       help
       (exit 0 (usage summary))
 
@@ -116,11 +120,31 @@
       (zero? (count arguments))
       (exit -1 (usage summary))
 
+      config
+      (do
+        (set-logging log-level)
+        (try
+          (let [config (-> config
+                           config/load-config
+                           config/validate-config)
+                results (core/exec-configured-tests config options (first arguments))]
+            (core/write-json-report results output-file)
+            (log/info "Results written to" output-file)
+            0)
+          (catch Exception e
+            (log/error "Failed to execute configured tests:" (.getMessage e))
+            -1)))
+
       :else
       (do
         (set-logging log-level)
-        (core/exec options (first arguments))))))
+        (let [stats @(core/exec options (first arguments))]
+          (core/write-json-report stats output-file)
+          (if (:error stats)
+            -1
+            0))))))
 
 (defn -main
   [& args]
+  (println "Executing manetu-data-loader with args:" args)
   (System/exit (apply -app args)))
