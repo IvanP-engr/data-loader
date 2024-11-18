@@ -7,6 +7,7 @@
             [manetu.data-loader.core :as core]
             [manetu.data-loader.driver.core :as driver.core]
             [manetu.data-loader.config :as config]
+            [manetu.data-loader.reports :as reports]
             [taoensso.timbre :as log])
   (:gen-class))
 
@@ -131,8 +132,8 @@
                            config/validate-config)
                 results (core/exec-configured-tests config options (first arguments))]
             (-> results
-                (core/write-json-report (:json-file options))
-                (core/write-csv-report (:csv-file options)))
+                (reports/write-json-report (:json-file options))
+                (reports/write-csv-report (:csv-file options)))
             0)
           (catch Exception e
             (log/error "Failed to execute configured tests:" (.getMessage e))
@@ -143,7 +144,7 @@
         (set-logging log-level)
         (let [stats @(core/exec options (first arguments))]
           (-> stats
-              (core/write-json-report (:json-file options)))
+              (reports/write-json-report (:json-file options)))
           (if (:error stats)
             -1
             0))))))

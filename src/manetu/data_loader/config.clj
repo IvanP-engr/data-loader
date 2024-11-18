@@ -1,3 +1,4 @@
+;; Copyright © Manetu, Inc.  All rights reserved
 (ns manetu.data-loader.config
   (:require [yaml.core :as yaml]))
 
