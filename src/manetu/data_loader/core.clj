@@ -10,6 +10,7 @@
             [manetu.data-loader.commands :as commands]
             [manetu.data-loader.loader :as loader]
             [manetu.data-loader.time :as t]
+            [manetu.data-loader.synthetic :as synthetic]
             [manetu.data-loader.driver.core :as driver.core]
             [manetu.data-loader.stats :as stats]
             [manetu.data-loader.reports :as reports]))
@@ -120,11 +121,15 @@
 
 (defn render [options stats]
   (reports/render-stats options stats))
+(defn get-records [{:keys [count namespace] :as options} path]
+  (if count
+    (synthetic/load-synthetic-records count namespace)
+    (loader/load-records path)))
 
 (defn exec-test
   [{:keys [mode concurrency] :as options} path]
   (try
-    (let [{:keys [n] :as records} (loader/load-records path)
+    (let [{:keys [n] :as records} (get-records options path)
           output-ch (async/chan (* 4 concurrency))]
       (log/debug "processing" n "records with options:" options)
       @(-> (driver.core/create options)

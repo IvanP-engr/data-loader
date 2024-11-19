@@ -81,7 +81,11 @@
    [nil "--csv-file FILE" "Write the results to a CSV file"
     :default "results.csv"]
    [nil "--json-file FILE" "Write the results to a JSON file"
-    :default "results.json"]])
+    :default "results.json"]
+   [nil "--count NUM" "Number of test iterations"
+    :parse-fn #(Integer/parseInt %)
+    :validate [pos? "Must be a positive integer"]]
+   [nil "--namespace NS" "Namespace prefix for synthetic vault labels"]])
 
 (defn exit [status msg & args]
   (do
@@ -120,8 +124,8 @@
       (string/blank? token)
       (exit -1 "--token required")
 
-      (zero? (count arguments))
-      (exit -1 (usage summary))
+      (and (zero? (count arguments)) (not count))
+      (exit -1 "Either input file <file.json> or --count must be provided")
 
       config
       (do

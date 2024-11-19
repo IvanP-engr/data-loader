@@ -12,8 +12,7 @@ The tool operates in several modes:
 2. **load-attributes**: Load attributes into the vault, based on the Person schema
 3. **delete-attributes**: Delete all attributes from the vault
 4. **delete-vaults**: Remove vaults from the system
-5. **query-attributes**: Query attribute data from vaults
-6. **onboard**: Simultaneously create vaults and load attributes
+5. **onboard**: Simultaneously create vaults and load attributes
 
 ## Installation
 
@@ -44,10 +43,16 @@ Run a single operation on your data:
 ```
 
 ### Benchmarking Mode
-The tool supports automated benchmarking using a YAML configuration file:
+The tool supports automated benchmarking using a YAML configuration file and a sample data file.
 
 ```shell
 ./target/bin/manetu-data-loader -u https://manetu.instance --token $MANETU_TOKEN --config tests.yaml -l debug sample-data/mock-data.json
+```
+
+You can also run the test without a data file by supplying a `--count`, count will be the number of iterations for the test, e.g, passing through `--count 1000` will create 1000 vaults. Optionally you can supply a prefix as well with `--namespace`, only really needed if planning on running parallel tests in the same cluster.
+
+```shell
+./target/bin/manetu-data-loader -u https://manetu.instance --token $MANETU_TOKEN --config tests.yaml --count 1000 -l debug 
 ```
 
 #### Configuration File Format (tests.yaml)
@@ -70,7 +75,6 @@ Results are written to a JSON file (default: results.json) containing:
     - Success/failure counts
     - Latency statistics (min, mean, stddev, percentiles)
     - Total duration and operation rate
-    - Error details if applicable
 
 Example output structure:
 ```json
@@ -123,4 +127,6 @@ Example output structure:
   -d, --driver DRIVER    :graphql                              Select the driver from: [graphql]
       --csv-file FILE    results.csv                           Write the results to a CSV file
       --json-file FILE   results.json                          Write the results to a JSON file
+      --count NUM                                              Number of test iterations
+      --namespace NS                                           Namespace prefix for synthetic vault labels
 ```
